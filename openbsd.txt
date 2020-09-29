@@ -1,0 +1,113 @@
+Openbsd Installation (20GB HDD,4GB memory)
+
+Install,autoinstall, upgrade or shell -> I (Install)
+Keyboard layout -> default
+hostname -> myopenbsd67
+Network em0, vlan0 -> em0
+Ipv4 -> dhcp
+TPv6 -> none
+done
+
+root account password -> munish
+sshd start -> yes
+Xwindow start -> no
+
+setup user -> nimda
+fullname -> nimda
+password -> munish
+
+root ssh login-> yes
+timezone -> asia/kolkata
+
+Disk ->sd0
+whole disk mbr or GPT -> MBR
+Auto, edit or create custom
+
+a 650mb /
+b 1gb  swap
+c 20GB unused
+d 917mb /tmp
+e 1.3GB /var
+f 2.3GB /usr
+g 691mb /usr/X11R6
+h 2.5GB /usr/local
+i 1.5GB /usr/src
+j 5.6GB /usr/obj
+k 4.0GB /home
+
+
+/dev/sd0a on / type ffs (local)
+/dev/sd0k on /home type ffs (local, nodev, nosuid)
+/dev/sd0d on /tmp type ffs (local, nodev, nosuid)
+/dev/sd0f on /usr type ffs (local, nodev)
+/dev/sd0g on /usr/X11R6 type ffs (local, nodev)
+/dev/sd0h on /usr/local type ffs (local, nodev, wxallowed)
+/dev/sd0j on /usr/obj type ffs (local, nodev, nosuid)
+/dev/sd0i on /usr/src type ffs (local, nodev, nosuid)
+/dev/sd0e on /var type ffs (local, nodev, nosuid)
+
+
+Install set cd0,disk,http,ntfs,done -> cd0
+path ->6.7/amd64
+
+set
+bsd, bsd.rd base67.tgz,comp67.tgz,man67.tgz,game57.tgz,
+xbas67.tgz,xshzre,tgz,xfonts.tgz,xserv67.tgz
+
+verfification -> continue
+Time
+
+Reboot
+
+
+
+####################
+Apply patch
+Install patch
+#syspatch 
+
+
+###############
+
+install program
+
+# vi /etc/installurl
+https://cdn.openbsd.org/pub/OpenBSD
+
+pkg_add -v  -i mutt 
+-v verbose, -i interactive or you can ignore the same.
+
+#pkg_info 
+list of package installed
+
+#pkg_add -u 
+update all packages
+
+
+##############ports
+
+#pkg_add wget
+#wget http://ftp.usa.openbsd.org/pub/OpenBSD/$(uname -r)/ports.tar.gz
+#wget http://ftp.usa.openbsd.org/pub/OpenBSD/$(uname -r)/SHA256.sig
+
+#signify -C -p /etc/signify/openbsd-67-base.pub -x SHA256.sig ports.tar.gz
+verfifed okay
+
+tar -zxvf ports.tar.gz -C /usr/
+
+$ cd /usr/ports
+$ ls 
+
+# cd /usr/ports/shells/fish
+# make install clean all
+
+error- Fatal: /usr/ports/pobj must be on a wxallowed filesystem (in lang/python/2.7)
+/usr to "rw,nodev,wxallowed". 
+
+
+$ cd /usr/ports
+$ make search key={KEY-WORD-HERE}
+
+
+############LAMP
+pkg_add php-mysqli mariadb-server apache-httpd
