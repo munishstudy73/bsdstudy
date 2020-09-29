@@ -1,0 +1,36 @@
+freebsd install
+
+
+install
+default keymap
+hostname -> myfreebsd
+kernel-dbg,lib32,ports
+auto-ufs auto-zfs
+
+mirror
+pool -zroot
+force 4k sector yes
+encypt - no
+partition scheme - GPT
+swap - 2G
+mirror swap - no
+encypt swap - no
+
+root password -> munish
+n/w setup em0
+IPv4 dhcp
+ipv6 no
+
+timezone - Asia/India
+
+service started - sshd,ntpdate,ntpd,dumpdev
+
+advance security on process
+
+add user - nimda
+fullname- nimda
+
+
+#########update
+#freebsd-update fetch
+#freebsd-update install
