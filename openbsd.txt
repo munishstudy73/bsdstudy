@@ -65,6 +65,10 @@ Reboot
 Apply patch
 Install patch
 #syspatch 
+-c list available
+-l list install
+-R revert all pacth
+-r revert most recent patch
 
 
 ###############
@@ -82,6 +86,14 @@ list of package installed
 
 #pkg_add -u 
 update all packages
+
+
+###################
+doas is replacement of sudo (for wheel group)
+su -
+echo "permit nopass keepenv :wheel" > /etc/doas.conf
+wheel user can run as
+doas su
 
 
 ##############ports
@@ -102,7 +114,7 @@ $ ls
 # make install clean all
 
 error- Fatal: /usr/ports/pobj must be on a wxallowed filesystem (in lang/python/2.7)
-/usr to "rw,nodev,wxallowed". 
+/usr to "rw,nodev,wxallowed" in fstab
 
 
 $ cd /usr/ports
@@ -110,4 +122,90 @@ $ make search key={KEY-WORD-HERE}
 
 
 ############LAMP
-pkg_add php-mysqli mariadb-server apache-httpd
+Using inbuilt openbsd httpd server
+inbuilt httpd -basic webserver that supports FastCGI and TLS. no gzip support (performance issue)
+he projects goals can be summarized as follows:
+
+Static files: Serves static files and directories via optional auto-indexing.
+FastCGI: Supports asynchronous and direct FastCGI via UNIX socket or TCP/IP.
+Secure: Non-optional security by running chroot’ed and with privilege separation by default.
+SSL/TLS: Support secure connections via TLS powered by LibreSSL.
+Virtual servers: Flexible configuration with support for name- and IP-based virtual servers on IPv4 and IPv6.
+Reconfiguration: Reload the running configuration without interruption.
+Logging: Supports per-server logging via local access and error files or via syslog.
+
+#cp /etc/examples/httpd.conf /etc
+
+
+server "example.com" {
+        listen on * port 80
+        location "/.well-known/acme-challenge/*" {
+                root "/acme"
+                request strip 2
+        }
+        location * {
+                block return 302 "https://$HTTP_HOST$REQUEST_URI"
+        }
+}
+
+server "example.com" {
+        listen on * tls port 443
+        tls {
+                certificate "/etc/ssl/example.com.fullchain.pem"
+                key "/etc/ssl/private/example.com.key"
+        }
+        location "/pub/*" {
+                directory auto index
+        }
+        location "/.well-known/acme-challenge/*" {
+                root "/acme"
+                request strip 2
+        }
+}
+Also
+server "www.fastcgi-example.domain" {
+    alias "fastcgi-example.domain"
+    listen on $ext_ip port 80
+    fastcgi socket ":{% port-number %}"
+}
+
+change to
+
+#[ MACROS ]
+ext_ip = "127.0.0.1"
+# ext_ip = "*"      # open to the outside network
+# ext_ip = "egress" # open to only the primary IP address of the network interface
+
+# [ GLOBAL CONFIGURATION ]
+# none
+
+# [ SERVERS ]
+server "default" {
+    listen on $ext_ip port 80
+    root "/htdocs/my.domain"
+}
+
+# [ TYPES ]
+types {
+    include "/usr/share/misc/mime.types"
+}
+
+
+make dir
+ mkdir -p /var/www/htdocs/my.domain/
+# chown {% user %}:{% group %} /var/www/htdocs/my.domain # if necessary
+$ echo "Hello, world. from OpenBSD httpd" > /var/www/htdocs/my.domain/index.html
+
+# rcctl enable httpd
+# cat /etc/rc.conf.local
+httpd_flags=
+# rcctl start httpd
+httpd(ok)
+#curl localhost:80
+
+
+
+# pkg_add -r mariadb-client mariadb-server 
+Readme at /usr/local/share/doc/pkg-readmes/
+
+ php php-curl php-mysqli pecl73-mcrypt pecl73-imagick 
