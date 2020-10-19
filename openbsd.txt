@@ -221,6 +221,54 @@ edit /etc/my.cnf
 bind_address=0.0.0.0
 #rcctl restart mysqld
 
+more resource by editing /etc/login.conf
+mysqld:\
+    :openfiles-cur=1024:\
+    :openfiles-max=2048:\
+    :tc=daemon:
+
+Edit /etc/rc.conf.local
+export MYSQL_HISTFILE=/dev/null   << to remove mysql history
+
+ #php php-curl php-mysqli pecl73-mcrypt pecl73-imagick 
+ using php7.4
+ 
+ cp /etc/php-7.4.sample/* /etc/php-7.4/.
+ OR
+ ln -sf /etc/php-7.4.sample/* /etc/php-7.4/. 
+
+>>>>>>>>>>> for apache_httpd
+Enable mod_php by symlinking the sample php-7.4.conf to the /var/www/conf/modules directory.
+ln -sf /var/www/conf/modules.sample/php-7.4.conf /var/www/conf/modules
 
 
- php php-curl php-mysqli pecl73-mcrypt pecl73-imagick 
+************************************************
+Installing webmin
+
+in dependenices
+pkg_add -r p5-Authen-NTLM p5-BSD-Resource p5-Crypt-SSLeay p5-HTML-Parser p5-HTML-Tagset p5-IO-Socket-SSL p5-IO-Tty p5-ldap p5-libwww p5-Locale-gettext p5-Net-OpenSSH p5-Net-SSH2 p5-Net-SSLeay p5-Test-Exception p5-XML-Filter-BufferText
+
+perl -MCPAN -e 'install Crypt::UnixCrypt'
+perl -MCPAN -e 'install Authen::Libwrap'  (fail due to tcpd.h)
+perl -MCPAN -e 'install Authen::Libwrap'  (fail due to tcpd.h)
+pkg_add -r p5-DBD-Pg
+
+
+
+cd /usr/local/
+ftp http://prdownloads.sourceforge.net/webadmin/webmin-1.955.tar.gz
+tar zxvf webmin-1.955.tar.gz
+cd webmin-1.955
+./setup.sh
+Webmin > Webmin Configuration > start at boot time - yes
+
+manually
+/etc/webmin/start
+/etc/webmin/stop
+
+webmin > other > perl modules
+from url install 
+http://www.cpan.org/authors/id/D/DM/DMUEY/Authen-Libwrap-0.23.tar.gz
+http://www.cpan.org/authors/id/G/GA/GAAS/Encode-Locale-1.05.tar.gz
+http://www.cpan.org/authors/id/G/GA/GAAS/Net-HTTP-6.06.tar.gz
+http://www.cpan.org/authors/id/S/SA/SADAHIRO/String-Multibyte-1.12.tar.gz
