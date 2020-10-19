@@ -207,5 +207,20 @@ httpd(ok)
 
 # pkg_add -r mariadb-client mariadb-server 
 Readme at /usr/local/share/doc/pkg-readmes/
+#rcctl enable mysqld
+#mysql_install_db
+#rcctl start|stop|restart|check mysqld
+verify
+#pgrep mysqld
+#ps aux | grep mysqld
+#netstat -f inet -na | grep 3306
+## mysql_secure_installation
+unix authentication for linux account or not
+
+edit /etc/my.cnf
+bind_address=0.0.0.0
+#rcctl restart mysqld
+
+
 
  php php-curl php-mysqli pecl73-mcrypt pecl73-imagick 
