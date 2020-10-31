@@ -27,7 +27,7 @@ a 650mb /
 b 1gb  swap
 c 20GB unused
 d 917mb /tmp
-e 1.3GB /var
+e 1.3GB /var rw,asynchronous,local,nodev.nosuid
 f 2.3GB /usr
 g 691mb /usr/X11R6
 h 2.5GB /usr/local
@@ -87,6 +87,10 @@ list of package installed
 #pkg_add -u 
 update all packages
 
+#pkg_info -Q wget
+or #pkglocate wget (not working)
+to search package
+
 
 ###################
 doas is replacement of sudo (for wheel group)
@@ -116,7 +120,7 @@ $ ls
 error- Fatal: /usr/ports/pobj must be on a wxallowed filesystem (in lang/python/2.7)
 /usr to "rw,nodev,wxallowed" in fstab
 
-
+$pkg_add portslist
 $ cd /usr/ports
 $ make search key={KEY-WORD-HERE}
 
