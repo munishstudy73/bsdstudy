@@ -234,16 +234,36 @@ mysqld:\
 Edit /etc/rc.conf.local
 export MYSQL_HISTFILE=/dev/null   << to remove mysql history
 
- #php php-curl php-mysqli pecl73-mcrypt pecl73-imagick 
- using php7.4
+#apt install phpMyAdmin (based on php7.3)
+#php php-curl php-mysqli pecl73-mcrypt pecl73-imagick 
+
+ using php7.3
  
- cp /etc/php-7.4.sample/* /etc/php-7.4/.
+ cp /etc/php-7.3.sample/* /etc/php-7.3/.
  OR
- ln -sf /etc/php-7.4.sample/* /etc/php-7.4/. 
+ ln -sf /etc/php-7.3.sample/* /etc/php-7.3/. 
 
 >>>>>>>>>>> for apache_httpd
 Enable mod_php by symlinking the sample php-7.4.conf to the /var/www/conf/modules directory.
-ln -sf /var/www/conf/modules.sample/php-7.4.conf /var/www/conf/modules
+ln -sf /var/www/conf/modules.sample/php-7.3.conf /var/www/conf/modules
+
+
+Enable php-fpm
+#rcctl enable/start   php73_fpm
+
+#nano /etc/httpd
+server "default" {
+    listen on * port 80
+    root "/htdocs/web1"
+
+#types {
+#    include "/usr/share/misc/mime.types"
+#}
+
+location "*.php*" {
+            fastcgi socket "/run/php-fpm.sock"
+    }
+}
 
 
 ************************************************
