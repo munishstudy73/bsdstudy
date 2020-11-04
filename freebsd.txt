@@ -34,3 +34,29 @@ fullname- nimda
 #########update
 #freebsd-update fetch
 #freebsd-update install
+
+##########
+webmin
+
+#pkg update
+#pkg install webmin
+
+Configure Webmin by running /usr/local/lib/webmin/setup.sh
+
+* Add webmin_enable="YES" to your /etc/rc.conf
+
+* Start Webmin for the first time by running "service webmin start"
+
+## /usr/local/lib/webmin/setup.sh
+#sysrc webmin_enable="YES"
+#service webmin start (for first time)
+
+install perl module
+
+#####################################
+FAMP
+#freebsd-update fetch install
+#pkg update && pkg upgrade -y
+#pkg install -y sudo vim bash curl
+
+
