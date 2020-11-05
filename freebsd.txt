@@ -75,4 +75,27 @@ Check ip
 #curl http://icanhazip.com
 
 Install mariadb
+#pkg install mariadb105-server
+#sysrc mysql_enable="YES"
+#service mysql-server start
+#service mysql-server status
+#mysql_secure_installation
+#pkg install phpMyAdmin5-php74
+        php74: 7.4.12
+        php74-bz2: 7.4.12
+        php74-ctype: 7.4.12
+        php74-filter: 7.4.12
+        php74-gd: 7.4.12
+        php74-json: 7.4.12
+        php74-mbstring: 7.4.12
+        php74-mysqli: 7.4.12
+        php74-openssl: 7.4.12
+        php74-session: 7.4.12
+        php74-xml: 7.4.12
+        php74-xmlwriter: 7.4.12
+        php74-zip: 7.4.12
+        php74-zlib: 7.4.12
+
+#cp /usr/local/etc/php.ini-production /usr/local/etc/php.ini
+
 
