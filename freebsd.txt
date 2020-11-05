@@ -59,4 +59,20 @@ FAMP
 #pkg update && pkg upgrade -y
 #pkg install -y sudo vim bash curl
 
+sudo to wheel
+#visudo
+ %wheel ALL=(ALL) ALL
+
+time
+#tzsetup
+
+#pkg install apache24
+#sysrc apache24_enable="YES"
+#service apache24 start / status
+
+Check ip
+#ifconfig vtnet0 | grep "inet " | awk '{ print $2; exit }'
+#curl http://icanhazip.com
+
+Install mariadb
 
