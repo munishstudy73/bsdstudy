@@ -292,10 +292,15 @@ manually
 
 webmin > other > perl modules
 from url install 
-http://www.cpan.org/authors/id/D/DM/DMUEY/Authen-Libwrap-0.23.tar.gz
+<<ISSUE>>http://www.cpan.org/authors/id/D/DM/DMUEY/Authen-Libwrap-0.23.tar.gz or tcph.d support
 http://www.cpan.org/authors/id/G/GA/GAAS/Encode-Locale-1.05.tar.gz
 http://www.cpan.org/authors/id/G/GA/GAAS/Net-HTTP-6.06.tar.gz
 http://www.cpan.org/authors/id/S/SA/SADAHIRO/String-Multibyte-1.12.tar.gz
+
+
 *************************************************************************
 
-letengpt
+Install ftpd
+inbuilt package
+#rcctl check ftpd
+
