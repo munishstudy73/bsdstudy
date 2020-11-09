@@ -1,0 +1,21 @@
+
+wired = "em0"
+
+set block-policy drop
+set loginterface $wired
+set skip on lo0
+
+webports = "{http, https}"
+sshports = "22"
+
+ 
+## enable these services ##
+int_tcp_services = "{domain, ntp, smtp, www, https, ftp, ssh}"
+int_udp_services = "{domain, ntp}"
+
+## Set default policy ##
+block return in log all
+block out all
+ 
+# Deal with attacks based on incorrect handling of packet fragments 
+scrub in all
