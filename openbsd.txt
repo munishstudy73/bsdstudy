@@ -54,6 +54,24 @@ set
 bsd, bsd.rd base67.tgz,comp67.tgz,man67.tgz,game57.tgz,
 xbas67.tgz,xshzre,tgz,xfonts.tgz,xserv67.tgz
 
+General file sets
+
+    bsd - The kernel (required) [do I need this, if I install bsd.mp?]
+    bsd.mp - The multi-processor kernel [required for multi-core CPUs?]
+    bsd.rd - The ramdisk kernel [required for upgrades?]
+    baseXX.tgz - The base system (required)
+    compXX.tgz - The compiler collection, headers and libraries [not needed on a server, right?]
+    manXX.tgz - Manual pages [not needed, as they're available online]
+    gameXX.tgz - Text-based games [definitely not needed ;-) ]
+
+X11 related file sets
+
+    xbaseXX.tgz - Base libraries and utilities for X11 (requires xshareXX.tgz)
+    xshareXX.tgz - X11's man pages, locale settings and includes
+    xfontXX.tgz - Fonts used by X11
+    xservXX.tgz - X11's X servers (xservXX.tgz set is rarely needed)
+
+
 verfification -> continue
 Time
 
@@ -90,7 +108,10 @@ update all packages
 #pkg_info -Q wget
 or #pkglocate wget (not working)
 to search package
-
+############################################
+#sysupgrade
+update whole system using all data sets
+#sysupgrade -n; rm /home/_sysupgrade/xserv66.tgz; reboot (to not upgrade the xserv set).
 
 ###################
 doas is replacement of sudo (for wheel group)
@@ -127,6 +148,120 @@ error- Fatal: /usr/ports/pobj must be on a wxallowed filesystem (in lang/python/
 $pkg_add portslist
 $ cd /usr/ports
 $ make search key={KEY-WORD-HERE}
+
+
+
+
+#############
+git etc folder
+Server
+#pkg_add -v -i  git
+#mkdir -p /git/etc
+#cd /git/etc
+#git init --bare
+
+working directory
+# cd /etc
+# git init
+# git add .
+# git config user.name "Joel Carnat"
+# git config user.email joel [at] carnat [dot] net
+# git remote add origin /git/etc
+
+#git commit -m "Initial: index.html" -a
+#git push origin master
+
+Remote access
+
+# mkdir /openbsdsrv/etc
+# git init
+# git add .
+# git config user.name "Joel Carnat"
+# git config user.email joel [at] carnat [dot] net
+# git remote add origin ssh://me@git-server.tld/git/etc
+# git pull origin master
+Enter passphrase for key '~/.ssh/id_rsa':
+remote: Counting objects: 3, done.
+remote: Compressing objects: 100% (2/2), done.
+remote: Total 3 (delta 0), reused 0 (delta 0)
+Unpacking objects: 100% (3/3), done.
+Depuis ssh://git-server.tld/home/git/project1
+ * branch            master     -> FETCH_HEAD
+ * [nouvelle branche] master     -> origin/master
+
+
+####################
+
+httpd.conf is required in order to activate httpd service.
+# if test -e /etc/httpd.conf; touch /etc/httpd.conf; end
+#nano /etc/httpd.conf
+
+#########################
+#[ MACROS ]
+ext_ip = "127.0.0.1"
+# ext_ip = "*"      # open to the outside network
+# ext_ip = "egress" # open to only the primary IP address of the network interface
+
+# [ GLOBAL CONFIGURATION ]
+# none
+
+# [ SERVERS ]
+server "default" {
+    listen on $ext_ip port 80
+    root "/htdocs/my.domain"
+}
+
+# [ TYPES ]
+types {
+    include "/usr/share/misc/mime.types"
+}
+
+#######################
+
+
+server "www.https-example.domain" { 
+    alias "https-example.domain" 
+    listen on $ext_ip port 80 
+    listen on $ext_ip tls port 443
+    tls {
+        key         "/etc/ssl/private/www.https-example.domain.key"
+        certificate "/etc/ssl/www.https-example.domain.crt"
+    }
+    root "/htdocs/www.https-example.domain" 
+}
+
+server "www.fastcgi-example.domain" {
+    alias "fastcgi-example.domain"
+    listen on $ext_ip port 80
+    fastcgi socket ":{% port-number %}"
+}
+
+
+
+################
+self sign certificate
+# openssl req -x509 -sha256 -newkey rsa:2048 -keyout certificate.key -out certificate.crt -days 1024 -nodes
+
+##############
+
+# mkdir -p /var/www/htdocs/website01
+# chown {% user %}:{% group %} /var/www/htdocs/website01 # if necessary
+$ echo "Hello, world. from OpenBSD httpd" > /var/www/htdocs/website01/index.html
+
+# rcctl enable httpd
+# cat /etc/rc.conf.local
+httpd_flags=
+# rcctl start httpd
+httpd(ok)
+
+$ curl localhost:80
+Hello, world. from OpenBSD httpd
+$curl -k localhost
+#curl --insecure localhost
+
+
+
+
 
 
 ############LAMP
