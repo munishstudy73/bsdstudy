@@ -16,7 +16,7 @@ swap - 2G
 mirror swap - no
 encypt swap - no
 
-root password -> munish
+root password -> munish730
 n/w setup em0
 IPv4 dhcp
 ipv6 no

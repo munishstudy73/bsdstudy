@@ -178,6 +178,7 @@ Remote access
 # git add .
 # git config user.name "Joel Carnat"
 # git config user.email joel [at] carnat [dot] net
+# git config color.ui auto
 # git remote add origin ssh://me@git-server.tld/git/etc
 # git pull origin master
 Enter passphrase for key '~/.ssh/id_rsa':
@@ -188,6 +189,15 @@ Unpacking objects: 100% (3/3), done.
 Depuis ssh://git-server.tld/home/git/project1
  * branch            master     -> FETCH_HEAD
  * [nouvelle branche] master     -> origin/master
+
+
+ git script to commit update
+
+# Git: add and commit changes
+cd /etc && /usr/bin/git add --all && /usr/bin/git commit -m ""Commit: `date +\"%Y-%m-%d %H:%M:%S"`""
+ 
+# send data to Git server
+cd /etc && /usr/bin/git push origin master
 
 
 ####################
@@ -373,6 +383,59 @@ mysqld:\
 Edit /etc/rc.conf.local
 export MYSQL_HISTFILE=/dev/null   << to remove mysql history
 
+imp:- 
+The default httpd in base or nginx in port are chrooted to /var/www, so let's put the socket in /var/www/var/run/mysql/mysql.sock, so that it appears to be /var/run/mysql/mysql.sock for the chrooted web server.
+
+Create the directory:
+
+install -d -m 0711 -o _mysql -g _mysql /var/www/var/run/mysql
+
+Edit /etc/my.cnf. In both the [client] section, and the [mysqld] section, change the line that reads:
+
+socket = /var/run/mysql/mysql.sock
+
+To:
+
+socket = /var/www/var/run/mysql/mysql.sock
+
+For other apps (none chroot) make soft link
+ ln -s /var/www/var/run/mysql /var/run/ (ensure that /var/run/mysql doesn't exist)
+
+To make permananet 
+cp /etc/examples/rc.local /etc/ (if rc.local not exist)
+echo "ln -s /var/www/var/run/mysql /var/run/" >> /etc/rc.local
+
+Another note regarding MariaDB is the max_allowed_packet setting in /etc/my.cnf. The default value is 1M for [mysqld] section. If you encounter problems when importing a dump file from another server, try increasing it to 16M or 64M, and then restarting MariaDB. 
+
+   webmin System configuration
+Path to mysqlshow command 	/usr/local/bin/mysqlshow
+Path to mysqladmin command 	/usr/local/bin/mysqladmin
+Path to mysql command 	/usr/local/bin/mysql
+Path to mysqldump command 	/usr/local/bin/mysqldump
+Path to mysqlimport command 	/usr/local/bin/mysqlimport
+Path to mysqld command 	Automatic  
+Command to start MySQL server 	rcctl restart mysqld
+Command to stop MySQL server 	rcctl stop mysqld  
+Path to MySQL shared libraries directory 	/usr/local/lib/mysql/  
+Path to MySQL databases directory 	/var/mysql 
+MySQL host to connect to 	localhost  
+MySQL port to connect to 	Default  
+MySQL socket file 	Default  
+MySQL configuration file /etc/my.cnf	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #apt install phpMyAdmin (based on php7.3)
 #php php-curl php-mysqli pecl73-mcrypt pecl73-imagick 
 
@@ -414,7 +477,7 @@ pkg_add -r p5-Authen-NTLM p5-BSD-Resource p5-Crypt-SSLeay p5-HTML-Parser p5-HTML
 perl -MCPAN -e 'install Crypt::UnixCrypt'
 perl -MCPAN -e 'install Authen::Libwrap'  (fail due to tcpd.h)
 perl -MCPAN -e 'install Authen::Libwrap'  (fail due to tcpd.h)
-pkg_add -r p5-DBD-Pg
+pkg_add -r p5-DBD-Pg p5-DBD-mysql
 
 
 
@@ -429,7 +492,7 @@ manually
 /etc/webmin/start
 /etc/webmin/stop
 
-webmin > other > perl modules
+webmin > other/tools > perl modules
 from url install 
 <<ISSUE>>http://www.cpan.org/authors/id/D/DM/DMUEY/Authen-Libwrap-0.23.tar.gz or tcph.d support
 http://www.cpan.org/authors/id/G/GA/GAAS/Encode-Locale-1.05.tar.gz
