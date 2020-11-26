@@ -41,6 +41,18 @@ webmin
 #pkg update
 #pkg install webmin
 
+ gettext-runtime: 0.21
+        indexinfo: 0.3.1
+        libffi: 3.3_1
+        p5-Authen-PAM: 0.16_2
+        p5-IO-Tty: 1.14
+        p5-Net-SSLeay: 1.88
+        perl5: 5.32.0
+        python37: 3.7.9
+        readline: 8.0.4
+        webmin: 1.954
+
+
 Configure Webmin by running /usr/local/lib/webmin/setup.sh
 
 * Add webmin_enable="YES" to your /etc/rc.conf
