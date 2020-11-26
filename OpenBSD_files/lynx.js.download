@@ -1,0 +1,139 @@
+// Add class to root html element
+document.documentElement.className = "js";
+
+// Add listeners
+addEventListener("load", linkFrames);
+addEventListener("load", linkMedia);
+addEventListener("load", createBars);
+addEventListener("load", setPager);
+addEventListener("keyup", setPager);
+addEventListener("resize", setPager);
+addEventListener("scroll", setPager);
+
+// Function to link iframes
+function linkFrames() {
+	// Get all iframes
+	var iframes = document.body.querySelectorAll("iframe");
+	// Modify the HTML
+	for (var i = 0; i < iframes.length; i += 1) {
+		var item = iframes[i];
+		// Get parent element
+		var parent = item.parentNode;
+		// Get URL and text for iframe
+		var itemsrc = item.getAttribute("src");
+		// Add text
+		var msg = document.createElement("p");
+		msg.innerHTML = 'IFRAME: <a class="iframe" href="' + itemsrc + '">' + itemsrc + '</a>';
+		parent.insertBefore(msg, item);
+		parent.removeChild(item);
+	}
+}
+
+// Function to modify media
+function linkMedia() {
+	// Get all media
+	var media = document.body.querySelectorAll("audio, img, video");
+	// Modify the HTML
+	for (var i = 0; i < media.length; i += 1) {
+		var item = media[i];
+		// Get parent element
+		var parent = item.parentNode;
+		// Check type of media
+		if (item.nodeName == "IMG") {
+			// Get URL and text for image
+			var itemsrc = item.getAttribute("src");
+			var itemtxt = item.getAttribute("alt")
+				       || item.getAttribute("title") || "image";
+		} else if (item.nodeName == "AUDIO" || item.nodeName == "VIDEO") {
+			// Get URL and text for media
+			if (item.getElementsByTagName("source").length >= 1) {
+				var sources = item.getElementsByTagName("source");
+				var itemsrc = sources[0].getAttribute("src");
+				var itemtxt = item.getAttribute("title") || "media";
+			} else {
+				var itemsrc = item.getAttribute("src");
+				var itemtxt = item.getAttribute("title") || "media";
+			}
+		}
+		// Modify link or create one
+		if (parent.nodeName == "A") {
+			parent.className = "media";
+			parent.innerHTML = itemtxt;
+		} else if (getComputedStyle(parent).getPropertyValue("display") == "inline" || parent.nodeName == "DIV") {
+			var link = document.createElement("p");
+			link.innerHTML = '<a class="media" href="' + itemsrc + '">' + itemtxt + '</a>';
+			parent.insertBefore(link, item);
+			parent.removeChild(item);
+		} else {
+			var link = document.createElement("a");
+			link.setAttribute("href", itemsrc);
+			link.className = "media";
+			link.innerHTML = itemtxt;
+			parent.insertBefore(link, item);
+			parent.removeChild(item);
+		}
+	}
+}
+
+// Function to get size of window and document
+function getSizes() {
+	// Get viewport height in pixels
+	viewheight = window.innerHeight;
+	// Get document height in pixels
+	totalheight = Math.max(
+		document.body.scrollHeight,
+		document.body.offsetHeight,
+		document.documentElement.clientHeight,
+		document.documentElement.scrollHeight,
+		document.documentElement.offsetHeight
+	);
+	// Calculate number of pages in document
+	numpages = Math.ceil( totalheight / viewheight )
+}
+
+// Function to create top and bottom bar
+function createBars() {
+	// Get sizes
+	getSizes();
+	// Create top bar with back button and pager
+	var topbar = document.createElement("div");
+	topbar.setAttribute("id", "topbar");
+	if (document.referrer != "" && window.history.length > 1) {
+		topbar.innerHTML += '<a class="history back" href="javascript:history.go(-1);" tabIndex="-1"></a>';
+	}
+	topbar.innerHTML += '<span id="pager">' + document.title + '</span>';
+	document.body.insertBefore(topbar, document.body.firstChild);
+	// Create bottom bar with help message
+	var bottombar = document.createElement("div");
+	bottombar.setAttribute("id", "bottombar");
+	document.body.insertBefore(bottombar, document.body.lastChild);
+}
+
+// Function to update pager and bottom bar
+function setPager() {
+	// Get sizes
+	getSizes();
+	// Get current link's URL
+	var activelink = document.activeElement.href;
+	// Get position in window
+	var winposition = window.scrollY + viewheight;
+	// Calculate current page
+	var pagenumber = Math.floor( numpages * winposition / totalheight );
+
+	// Update top bar
+	if (numpages > 1) {
+		document.getElementById("pager").innerHTML = document.title + ' <span class="pager">(p<span id="pagenum">' + pagenumber + '</span> of ' + numpages + ')</span>';
+	} else {
+		document.getElementById("pager").innerHTML = document.title;
+	}
+	// Update bottom bar
+	if (pagenumber < numpages && activelink) {
+		document.getElementById("bottombar").innerHTML = "-more- " + activelink;
+	} else if (pagenumber < numpages) {
+		document.getElementById("bottombar").innerHTML = "-more-";
+	} else if (activelink) {
+		document.getElementById("bottombar").innerHTML = activelink;
+	} else {
+		document.getElementById("bottombar").innerHTML = "Commands: Use arrow keys to move.";
+	}
+}

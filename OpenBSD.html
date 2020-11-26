@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<!-- saved from url=(0032)http://jpdh.ga/tips/openbsd.html -->
+<html lang="en" class="js"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--[if lt IE 9]>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
+<![endif]-->
+
+<title>OpenBSD</title>
+<meta name="description" content="Basic configuration Basic configuration">
+<link rel="canonical" href="http://jpdh.ga/tips/openbsd.html">
+
+  <link rel="stylesheet" href="./OpenBSD_files/css">
+  <link rel="stylesheet" href="./OpenBSD_files/lynx.css">
+  <script src="./OpenBSD_files/lynx.js.download"></script>
+  </head>
+  <body><div id="topbar"><a class="history back" href="javascript:history.go(-1);" tabindex="-1"></a><span id="pager">OpenBSD <span class="pager">(p<span id="pagenum">5</span> of 6)</span></span></div>
+<header>
+  <div class="skip-content">
+    <a href="http://jpdh.ga/tips/openbsd.html#main-content">Skip to content</a>
+  </div>
+  <h1 class="title">OpenBSD</h1>
+  
+  
+</header>
+
+    <main class="page-content" aria-label="Content">
+      <div class="wrapper">
+<nav id="TOC">
+<ul>
+<li><a href="http://jpdh.ga/tips/openbsd.html#basic-configuration">Basic configuration</a><ul>
+<li><a href="http://jpdh.ga/tips/openbsd.html#doas"><em>doas</em></a></li>
+<li><a href="http://jpdh.ga/tips/openbsd.html#sudo"><em>sudo</em></a></li>
+</ul></li>
+<li><a href="http://jpdh.ga/tips/openbsd.html#repository-commands">Repository commands</a><ul>
+<li><a href="http://jpdh.ga/tips/openbsd.html#mirrors">Mirrors</a></li>
+<li><a href="http://jpdh.ga/tips/openbsd.html#finding-packages">Finding packages</a></li>
+<li><a href="http://jpdh.ga/tips/openbsd.html#installing-packages">Installing packages</a></li>
+<li><a href="http://jpdh.ga/tips/openbsd.html#updating-packages">Updating packages</a></li>
+<li><a href="http://jpdh.ga/tips/openbsd.html#removing-packages">Removing packages</a></li>
+<li><a href="http://jpdh.ga/tips/openbsd.html#duplicating-installed-packages-on-another-machine">Duplicating installed packages on another machine</a></li>
+<li><a href="http://jpdh.ga/tips/openbsd.html#consistency-of-installed-packages">Consistency of installed packages</a></li>
+</ul></li>
+<li><a href="http://jpdh.ga/tips/openbsd.html#ports">Ports</a><ul>
+<li><a href="http://jpdh.ga/tips/openbsd.html#setting-up-as-normal-user">Setting up as normal user</a></li>
+<li><a href="http://jpdh.ga/tips/openbsd.html#finding-ports">Finding ports</a></li>
+<li><a href="http://jpdh.ga/tips/openbsd.html#installing-ports">Installing ports</a></li>
+<li><a href="http://jpdh.ga/tips/openbsd.html#cleaning-up-ports">Cleaning up ports</a></li>
+<li><a href="http://jpdh.ga/tips/openbsd.html#updating-ports">Updating ports</a></li>
+<li><a href="http://jpdh.ga/tips/openbsd.html#uninstalling-ports">Uninstalling ports</a></li>
+</ul></li>
+<li><a href="http://jpdh.ga/tips/openbsd.html#serial-console">Serial console</a></li>
+<li><a href="http://jpdh.ga/tips/openbsd.html#links">Links</a></li>
+</ul>
+</nav>
+<div id="main-content" tabindex="-1">
+<h2 id="basic-configuration">Basic configuration</h2>
+<h3 id="doas"><em>doas</em></h3>
+<ul>
+<li><p>Configure <code>doas</code> for default normal user:</p>
+<pre><code>cat &lt;&lt;- 'EOF' &gt;&gt; /etc/doas.conf
+permit persist keepenv :wheel
+EOF</code></pre></li>
+</ul>
+<h3 id="sudo"><em>sudo</em></h3>
+<ul>
+<li><p>Installing package for <code>sudo</code>:</p>
+<pre><code>pkg_add sudo</code></pre></li>
+<li><p>Configure <code>sudo</code> for default normal user:</p>
+<pre><code>cat &lt;&lt;- 'EOF' &gt;&gt; /etc/sudoers
+%wheel	ALL=(ALL) SETENV: ALL
+EOF</code></pre></li>
+</ul>
+<h2 id="repository-commands">Repository commands</h2>
+<h3 id="mirrors">Mirrors</h3>
+<ul>
+<li><p>Select mirror:</p>
+<pre><code>export PKG_PATH=http://ftp.openbsd.org/pub/OpenBSD/$(uname -r)/packages/$(uname -m)/</code></pre></li>
+</ul>
+<h3 id="finding-packages">Finding packages</h3>
+<ul>
+<li><p>Search for a package by name:</p>
+<pre><code>pkg_info -Q &lt;name&gt;</code></pre></li>
+<li><p>Search for a specific filename:</p>
+<pre><code>pkg_add pkglocatedb
+pkglocate &lt;filename&gt;</code></pre></li>
+</ul>
+<h3 id="installing-packages">Installing packages</h3>
+<ul>
+<li><p>Install package ‘pkg’:</p>
+<pre><code>pkg_add &lt;pkg&gt;</code></pre></li>
+</ul>
+<h3 id="updating-packages">Updating packages</h3>
+<ul>
+<li><p>Update package ‘pkg’ and its dependencies:</p>
+<pre><code>pkg_add -u &lt;pkg&gt;</code></pre></li>
+<li><p>Update all packages:</p>
+<pre><code>pkg_add -u</code></pre></li>
+</ul>
+<h3 id="removing-packages">Removing packages</h3>
+<ul>
+<li><p>Uninstall package ‘pkg’:</p>
+<pre><code>pkg_delete &lt;pkg&gt;</code></pre></li>
+<li><p>Uninstall package ‘pkg’ and unused dependencies:</p>
+<pre><code>pkg_delete -a &lt;pkg&gt;</code></pre></li>
+</ul>
+<h3 id="duplicating-installed-packages-on-another-machine">Duplicating installed packages on another machine</h3>
+<ul>
+<li><p>Dump list of installed packages to a file:</p>
+<pre><code>pkg_info -mz | tee pkg_list</code></pre></li>
+<li><p>Install packages from a list:</p>
+<pre><code>pkg_add -l pkg_list</code></pre></li>
+</ul>
+<h3 id="consistency-of-installed-packages">Consistency of installed packages</h3>
+<ul>
+<li><p>Check installed packages:</p>
+<pre><code>pkg_check</code></pre></li>
+</ul>
+<h2 id="ports">Ports</h2>
+<h3 id="setting-up-as-normal-user">Setting up as normal user</h3>
+<ul>
+<li><p>Add user ‘john’ to appropriate groups:</p>
+<pre><code>sudo user mod -G wobj,wsrc john</code></pre></li>
+<li><p>Modify <code>mk.conf</code> file:</p>
+<pre><code>cat &lt;&lt;- 'EOF' | sudo tee -a /etc/mk.conf
+SUDO=sudo
+PORTS_PRIVSEP=Yes
+BUILD_USER=john
+FETCH_USER=john
+WRKOBJDIR=/usr/obj/ports
+PACKAGE_REPOSITORY=/usr/packages
+DISTDIR=/usr/distfiles
+EOF</code></pre></li>
+<li><p>Create <code>ports</code> directory with appropriate permissions:</p>
+<pre><code>cd /usr
+sudo mkdir ports
+sudo chmod 775 ports
+sudo chgrp wsrc ports</code></pre></li>
+<li><p>Clone ports tree as user:</p>
+<pre><code>cd /usr
+cvs -qd anoncvs@anoncvs.fr.openbsd.org:/cvs checkout -rOPENBSD_6_5 -P ports</code></pre></li>
+<li><p>Check permissions and fix if necessary:</p>
+<pre><code>cd /usr/ports
+sudo make fix-permissions</code></pre></li>
+</ul>
+<h3 id="finding-ports">Finding ports</h3>
+<ul>
+<li><p>Search the ports tree for a package:</p>
+<pre><code>sudo pkg_add portslist
+cd /usr/ports
+make search key=dwm</code></pre></li>
+</ul>
+<h3 id="installing-ports">Installing ports</h3>
+<ul>
+<li><p>Install package:</p>
+<pre><code>cd /usr/ports/x11/dwm
+make install</code></pre></li>
+<li><p>Patch and install package:</p>
+<pre><code>cd /usr/ports/x11/dwm
+make patch &amp;&amp; cd `make show=WRKDIST`
+# # Do some changes (e.g. `patch -p1 &lt; patch.diff`)
+cd -
+make install</code></pre></li>
+</ul>
+<h3 id="cleaning-up-ports">Cleaning up ports</h3>
+<ul>
+<li><p>Remove packages that were installed only for building:</p>
+<pre><code>sudo pkg_delete -a</code></pre></li>
+<li><p>Clean port’s working directory:</p>
+<pre><code>make clean</code></pre></li>
+<li><p>Remove the source distribution set(s) of the port:</p>
+<pre><code>make clean=dist</code></pre></li>
+</ul>
+<h3 id="updating-ports">Updating ports</h3>
+<ul>
+<li><p>Updating ports tree:</p>
+<pre><code>cd /usr/ports
+cvs -q update -Pd -rOPENBSD_6_5</code></pre></li>
+</ul>
+<h3 id="uninstalling-ports">Uninstalling ports</h3>
+<ul>
+<li><p>Uninstall package:</p>
+<pre><code>make uninstall</code></pre></li>
+<li><p>Clean built package:</p>
+<pre><code>make clean=packages</code></pre></li>
+</ul>
+<h2 id="serial-console">Serial console</h2>
+<ul>
+<li><p>Configure serial boot:</p>
+<pre><code>echo 'set tty com0' &gt;&gt; /etc/boot.conf</code></pre></li>
+<li><p>Configure serial console login:</p>
+<pre><code>sed -i 's,^tty00.*unknown.*off$,tty00	"/usr/libexec/getty std.9600"	vt220	on  secure,' /etc/ttys</code></pre></li>
+<li><p>Make installation ISO (e.g. <em>cd65.iso</em>) boot using serial:</p>
+<pre><code>echo 'set tty com0' &gt; /tmp/boot.conf
+growisofs -M cd65.iso -l -graft-points /etc/boot.conf=/tmp/boot.conf</code></pre></li>
+</ul>
+<h2 id="links">Links</h2>
+<ul>
+<li><a href="https://www.openbsd.org/faq/faq5.html">OpenBSD FAQ: Building the System from Source</a></li>
+<li><a href="https://www.openbsd.org/faq/faq15.html">OpenBSD FAQ: Packages and ports</a></li>
+<li><a href="https://www.openbsd.org/faq/ports/ports.html">OpenBSD Ports: Working with Ports</a></li>
+<li><a href="https://man.openbsd.org/bsd.port.mk">bsd.port.mk(5) - OpenBSD manual pages</a></li>
+<li><a href="https://www.openbsd.org/faq/faq7.html#SerCon">OpenBSD FAQ: Keyboard and Display Controls</a></li>
+<li><a href="https://web.archive.org/web/20190531094408/http://openbsd-archive.7691.n7.nabble.com/qemu-nographic-td40198.html#a40201">openbsd user - misc - qemu -nographic</a></li>
+</ul>
+</div>
+
+      </div>
+    </main><div id="bottombar">-more-</div>
+  
+
+</body></html>
