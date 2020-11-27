@@ -1,4 +1,4 @@
-Openbsd Installation (20GB HDD,4GB memory)
+﻿Openbsd Installation (20GB HDD,4GB memory)
 
 Install,autoinstall, upgrade or shell -> I (Install)
 Keyboard layout -> default
@@ -149,7 +149,9 @@ $pkg_add portslist
 $ cd /usr/ports
 $ make search key={KEY-WORD-HERE}
 
-
+##########
+Diable firewall
+#rcctl disable pf
 
 
 #############
@@ -603,3 +605,6 @@ pass out quick on $ext_if proto udp to any port $int_udp_services
 # Add custom rules below
 
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+postgress install
