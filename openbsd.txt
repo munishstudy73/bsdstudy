@@ -10,7 +10,7 @@ done
 
 root account password -> munish
 sshd start -> yes
-Xwindow start -> no
+Xwindow start by xenodm -> no
 
 setup user -> nimda
 fullname -> nimda
@@ -45,6 +45,14 @@ k 4.0GB /home
 /dev/sd0j on /usr/obj type ffs (local, nodev, nosuid)
 /dev/sd0i on /usr/src type ffs (local, nodev, nosuid)
 /dev/sd0e on /var type ffs (local, nodev, nosuid)
+
+E 
+R k
+size Xg
+a
+...
+q
+
 
 
 Install set cd0,disk,http,ntfs,done -> cd0
