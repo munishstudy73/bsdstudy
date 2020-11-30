@@ -35,6 +35,16 @@ fullname- nimda
 #freebsd-update fetch
 #freebsd-update install
 
+
+Ports update
+first time if /usr/ports not exist
+#portsnap fetch
+#portsnap extract
+if /usr/ports exist & created by portsnap
+#portsnap fetch update
+
+If rm -rf /usr/ports , device busy because it is zfs dataset and can be deleted by zfs destory command only
+
 ##########
 webmin
 
@@ -65,7 +75,10 @@ Configure Webmin by running /usr/local/lib/webmin/setup.sh
 
 install perl module
 
+webmin>tools>perl modules> suggested modules.
+Authen::Libwrap Net::LDAP 
 #####################################
+
 FAMP
 #freebsd-update fetch install
 #pkg update && pkg upgrade -y
@@ -92,7 +105,14 @@ Install mariadb
 #service mysql-server start
 #service mysql-server status
 #mysql_secure_installation
+
+
 #pkg install phpMyAdmin5-php74
+         giflib: 5.2.1
+        libargon2: 20190702
+        libgd: 2.3.0,1
+        libzip: 1.5.2
+        oniguruma: 6.9.5.r1_1
         php74: 7.4.12
         php74-bz2: 7.4.12
         php74-ctype: 7.4.12
@@ -107,7 +127,80 @@ Install mariadb
         php74-xmlwriter: 7.4.12
         php74-zip: 7.4.12
         php74-zlib: 7.4.12
+        phpMyAdmin5-php74: 5.0.2
+        webp: 1.1.0
+
 
 #cp /usr/local/etc/php.ini-production /usr/local/etc/php.ini
 
+
+nginx install
+
+mainline - latest with all feature and bugfixes
+#pkg install -y nginx-devel
+stable - release with bugfix
+#pkg install -y nginx
+
+check version
+#nginx -v
+
+#sudo sysrc nginx_enable=yes
+#sudo service nginx start
+php
+#pkg install -y php74
+
+#sysrc php_fpm_enable=yes
+#service php-fpm start
+#service php-fpm status
+
+check modules
+#php -m
+
+configure nginx
+sudo vim /usr/local/etc/nginx/test.conf
+
+server {
+
+  listen 80;
+  server_name SERVER_IP; # Replace with your IP or hostname
+  root /usr/local/www/nginx-dist;
+  index index.php index.html index.htm;
+
+  location / {
+    try_files $uri $uri/ =404;
+  }
+
+  location ~ \.php$ {
+    fastcgi_pass 127.0.0.1:9000;
+    fastcgi_index index.php;
+    fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+    include fastcgi_params;
+  }
+
+} 
+
+Run sudo vim /usr/local/etc/nginx/nginx.conf to open the main configuration file in Vim and add the following line to the http {} block.
+include test.conf;
+
+
+
+*************************************************
+haproxy
+
+#pkg install haproxy21
+
+
+##############################################
+git
+
+#pkg install git git-extra
+#mkdir store01
+#zfs list
+#zfs list
+
+#zfs create zroot/store01
+#zfs set mountpoint=/store01 zroot/store01
+
+
+zfs set readonly=off zroot/ROOT/default
 
