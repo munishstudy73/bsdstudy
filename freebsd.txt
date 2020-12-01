@@ -189,6 +189,11 @@ haproxy
 
 #pkg install haproxy21
 
+edit /usr/local/etc/haproxy.cfg
+
+
+
+
 
 ##############################################
 git
@@ -202,5 +207,16 @@ git
 #zfs set mountpoint=/store01 zroot/store01
 
 
-zfs set readonly=off zroot/ROOT/default
+
+################################
+check for open ports in Freebsd
+
+## Show listening sockets ##
+sockstat -l
+ ## Show listening sockets for IPv4 only ##
+sockstat -4 -l
+ ## Show listening sockets for IPv6 only ##
+sockstat -6 -l
+
+
 
