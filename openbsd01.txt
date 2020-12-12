@@ -274,7 +274,7 @@ server "default" {
     #alias "www.example.com"
     root "/htdocs/website"
     directory index "index.php"
-
+    connection { max request body 8388608 }
 
     location "*.php*" {
         fastcgi socket "/run/php-fpm.sock"
