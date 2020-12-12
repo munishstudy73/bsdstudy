@@ -446,8 +446,25 @@ MySQL configuration file /etc/my.cnf
 
 
 
-#apt install phpMyAdmin (based on php7.3)
-#php php-curl php-mysqli pecl73-mcrypt pecl73-imagick 
+#pkg_add phpMyAdmin (based on php7.3)
+phpMyAdmin-4.9.5:jpeg-2.0.5v0: ok
+phpMyAdmin-4.9.5:png-1.6.37: ok
+phpMyAdmin-4.9.5:giflib-5.1.6: ok
+phpMyAdmin-4.9.5:zstd-1.4.5p0: ok
+phpMyAdmin-4.9.5:tiff-4.1.0: ok
+phpMyAdmin-4.9.5:libwebp-1.1.0: ok
+phpMyAdmin-4.9.5:argon2-20190702: ok
+phpMyAdmin-4.9.5:femail-1.0p1: ok
+phpMyAdmin-4.9.5:femail-chroot-1.0p3: ok
+phpMyAdmin-4.9.5:oniguruma-6.9.6: ok
+phpMyAdmin-4.9.5:libsodium-1.0.18p1: ok
+phpMyAdmin-4.9.5:php-7.3.25: ok
+phpMyAdmin-4.9.5:php-gd-7.3.25: ok
+phpMyAdmin-4.9.5:php-mysqli-7.3.25: ok
+phpMyAdmin-4.9.5: ok
+
+
+#pkg_add -iv php php-curl  pecl73-mcrypt pecl73-imagick 
 
  using php7.3
  
