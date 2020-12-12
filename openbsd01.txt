@@ -37,3 +37,276 @@ $ cvs -qd anoncvs@anoncvs.ca.openbsd.org:/cvs checkout -rOPENBSD_6_8 -P ports
 later update
 $ cd /usr/ports
 $ cvs -q up -Pd -rOPENBSD_6_8
+
+
+script for update
+#!/bin/ksh
+
+LOG_FILE="/var/log/openbsd-update.log"
+
+echo "#################"
+/usr/bin/uname -a | /usr/bin/tee -a  ${LOG_FILE}
+echo "Starting updates: `date`" | /usr/bin/tee -a ${LOG_FILE}
+echo "*****************"
+echo "Checking for openBSD patches"
+
+/usr/sbin/syspatch | /usr/bin/tee -a ${LOG_FILE}
+
+echo "*****************"
+
+echo "Updating ports tree"
+cd /usr/ports
+/usr/bin/cvs -q up -Pd -rOPENBSD_6_8 | /usr/bin/tee -a ${LOG_FILE}
+
+echo "*****************"
+
+echo "Updating Packages"
+pkg_add -uv | /usr/bin/tee -a ${LOG_FILE}
+
+echo "*****************"
+
+echo "Finished updates: `date`" | /usr/bin/tee -a ${LOG_FILE}
+echo "#################"#
+
+
+
+
+#rcctl disable pf
+
+httpd
+
+create /etc/httpd.conf
+#[ MACROS ]
+#ext_ip = "127.0.0.1"
+ext_ip = "*"      # open to the outside network
+# ext_ip = "egress" # open to only the primary IP address of the network interface
+
+# [ GLOBAL CONFIGURATION ]
+# none
+
+# [ SERVERS ]
+server "default" {
+    listen on $ext_ip port 80
+    root "/htdocs/website"
+}
+
+# [ TYPES ]
+types {
+    include "/usr/share/misc/mime.types"
+}
+
+# rcctl enable httpd
+# cat /etc/rc.conf.local
+httpd_flags=
+# rcctl start httpd
+httpd(ok)
+
+$ curl localhost:80
+Hello, world. from OpenBSD httpd
+$curl -k localhost
+#curl --insecure localhost
+
+
+
+# pkg_add -r mariadb-client mariadb-server 
+Readme at /usr/local/share/doc/pkg-readmes/
+#rcctl enable mysqld
+#mysql_install_db
+#rcctl start|stop|restart|check mysqld
+verify
+#pgrep mysqld
+#ps aux | grep mysqld
+#netstat -f inet -na | grep 3306
+## mysql_secure_installation
+unix authentication for linux account or not
+enable root account to use socket
+
+
+#mariadb
+GRANT ALL ON *.* TO 'admin'@'localhost' IDENTIFIED BY 'password' WITH GRANT OPTION;
+FLUSH PRIVILEGES;
+exit
+
+echo "update mysql.user set plugin = 'mysql_native_password' where user='admin';" | mysql -u root # for access via external app
+
+edit /etc/my.cnf
+bind_address=0.0.0.0
+#rcctl restart mysqld
+
+more resource by editing /etc/login.conf
+mysqld:\
+    :openfiles-cur=1024:\
+    :openfiles-max=2048:\
+    :tc=daemon:
+
+Edit /etc/rc.conf.local
+export MYSQL_HISTFILE=/dev/null   << to remove mysql history
+
+imp:- 
+The default httpd in base or nginx in port are chrooted to /var/www, so let's put the socket in /var/www/var/run/mysql/mysql.sock, so that it appears to be /var/run/mysql/mysql.sock for the chrooted web server.
+
+Create the directory:
+
+install -d -m 0711 -o _mysql -g _mysql /var/www/var/run/mysql
+
+Edit /etc/my.cnf. In both the [client] section, and the [mysqld] section, change the line that reads:
+
+socket = /var/run/mysql/mysql.sock
+
+To:
+
+socket = /var/www/var/run/mysql/mysql.sock
+
+For other apps (none chroot) make soft link
+ ln -s /var/www/var/run/mysql /var/run/ (ensure that /var/run/mysql doesn't exist)
+first ensure /var/run/mysqld is deleted
+
+To make permananet 
+cp /etc/examples/rc.local /etc/ (if rc.local not exist)
+echo "ln -s /var/www/var/run/mysql /var/run/" >> /etc/rc.local
+
+Another note regarding MariaDB is the max_allowed_packet setting in /etc/my.cnf. The default value is 1M for [mysqld] section. If you encounter problems when importing a dump file from another server, try increasing it to 16M or 64M, and then restarting MariaDB. 
+max_allowed_packet=64M
+
+
+rcctl start mysqld
+
+PHP
+#pkg_add phpMyAdmin (based on php7.3)
+phpMyAdmin-4.9.5:jpeg-2.0.5v0: ok
+phpMyAdmin-4.9.5:png-1.6.37: ok
+phpMyAdmin-4.9.5:giflib-5.1.6: ok
+phpMyAdmin-4.9.5:zstd-1.4.5p0: ok
+phpMyAdmin-4.9.5:tiff-4.1.0: ok
+phpMyAdmin-4.9.5:libwebp-1.1.0: ok
+phpMyAdmin-4.9.5:argon2-20190702: ok
+phpMyAdmin-4.9.5:femail-1.0p1: ok
+phpMyAdmin-4.9.5:femail-chroot-1.0p3: ok
+phpMyAdmin-4.9.5:oniguruma-6.9.6: ok
+phpMyAdmin-4.9.5:libsodium-1.0.18p1: ok
+phpMyAdmin-4.9.5:php-7.3.25: ok
+phpMyAdmin-4.9.5:php-gd-7.3.25: ok
+phpMyAdmin-4.9.5:php-mysqli-7.3.25: ok
+phpMyAdmin-4.9.5: ok
+
+cp  /var/www/conf/modules.sample/phpmyadmin.conf  /var/www/conf/modules/
+
+#pkg_add -iv php php-curl  pecl73-mcrypt pecl73-imagick 
+
+
+ ln -sf /etc/php-7.3.sample/* /etc/php-7.3/. 
+
+>>>>>>>>>>> for apache_httpd
+Enable mod_php by symlinking the sample php-7.4.conf to the /var/www/conf/modules directory.
+cp  -rv /var/www/conf/modules.sample/php-7.3.conf /var/www/conf/modules
+
+
+Enable php-fpm
+#rcctl enable/start   php73_fpm
+
+#nano /etc/httpd
+server "default" {
+    listen on * port 80
+    root "/htdocs/web1"
+
+#types {
+#    include "/usr/share/misc/mime.types"
+#}
+
+location "*.php*" {
+            fastcgi socket "/run/php-fpm.sock"
+    }
+}
+
+
+######################
+webmin
+
+   webmin System configuration
+Path to mysqlshow command 	/usr/local/bin/mysqlshow
+Path to mysqladmin command 	/usr/local/bin/mysqladmin
+Path to mysql command 	/usr/local/bin/mysql
+Path to mysqldump command 	/usr/local/bin/mysqldump
+Path to mysqlimport command 	/usr/local/bin/mysqlimport
+Path to mysqld command 	Automatic  
+Command to start MySQL server 	rcctl restart mysqld
+Command to stop MySQL server 	rcctl stop mysqld  
+Path to MySQL shared libraries directory 	/usr/local/lib/mysql/  
+Path to MySQL databases directory 	/var/mysql 
+MySQL host to connect to 	localhost  
+MySQL port to connect to 	Default  
+MySQL socket file 	Default  
+MySQL configuration file /etc/my.cnf	
+
+
+The Perl module DBD::mysql is not installed on your system, so Webmin will not be able to reliably access your MySQL database. Click here to install it now.
+
+ssl certificate
+openssl genrsa -out /etc/ssl/private/server.key 4096
+
+openssl req -new -key /etc/ssl/private/server.key \
+  -out /etc/ssl/private/server.csr
+
+openssl x509 -sha256 -req -days 365 \
+  -in /etc/ssl/private/server.csr \
+  -signkey /etc/ssl/private/server.key \
+  -out /etc/ssl/server.crt
+#############
+edit /etc/httpd.conf
+
+#[ MACROS ]
+#ext_ip = "127.0.0.1"
+ext_ip = "*"      # open to the outside network
+# ext_ip = "egress" # open to only the primary IP address of the network interface
+# [ GLOBAL CONFIGURATION ]
+# none
+# [ SERVERS ]
+server "default" {
+    listen on $ext_ip port 80
+    root "/htdocs/website"
+     directory index "index.php"
+location "*.php*" {
+            fastcgi socket "/run/php-fpm.sock"
+    }
+}
+server "default" {
+    listen on $ext_ip tls port 443
+    #alias "www.example.com"
+    root "/htdocs/website"
+    directory index "index.php"
+
+
+    location "*.php*" {
+        fastcgi socket "/run/php-fpm.sock"
+     }
+
+    tls {
+        certificate "/etc/ssl/server.crt"
+        key "/etc/ssl/private/server.key"
+    }
+}
+
+
+# [ TYPES ]
+types {
+    include "/usr/share/misc/mime.types"
+}
+
+####################
+
+mkdir /var/www/etc
+cp /etc/hosts /var/www/etc/.
+cp /etc/resolv.conf /var/www/etc/.
+
+
+tar -zxvpf latest.tar.gz
+
+
+mysql -u root -p 
+CREATE DATABASE wordpress;
+GRANT ALL PRIVILEGES ON wordpress.* TO '<wp_user>'@'localhost' IDENTIFIED BY '<password>';
+FLUSH PRIVILEGES;
+EXIT
+
+
+
